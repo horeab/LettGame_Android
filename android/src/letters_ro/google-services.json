@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "136035148933",
+    "firebase_url": "https://lettersro-83101.firebaseio.com",
+    "project_id": "lettersro-83101",
+    "storage_bucket": "lettersro-83101.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:136035148933:android:07027dbcb4f8f127",
+        "android_client_info": {
+          "package_name": "com.habapps.lettersro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "136035148933-g2vdgctlvr2a5id6v929kk4f77gq3bqt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkVooECPA1ATwB4Jc_AmpzPpXcVeI58zY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "136035148933-g2vdgctlvr2a5id6v929kk4f77gq3bqt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Jocul Cuvintelor</string>
+    <string name="language">ro</string>
+    <string name="game_id">lettersgame</string>
+
+    <string name="admob_banner_id">ca-app-pub-9432399956064043/8066358055</string>
+    <string name="admob_inter_id">ca-app-pub-9432399956064043/8537131349</string>
+    <string name="admob_video_id">ca-app-pub-9432399956064043/2814031370</string>
+    <string name="admob_app_id">ca-app-pub-9432399956064043~1884093088</string>
+
+    <bool name="google_facebook_login_enabled">false</bool>
+</resources>
