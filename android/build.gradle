@@ -11,10 +11,10 @@ android {
             res.srcDirs = ['res']
             jniLibs.srcDirs = ['libs']
         }
-        letters_en {
+        letters {
             assets.srcDirs = ['assets/tournament_resources/implementations/lettersgame', 'assets/tournament_resources/main', 'assets/main_resources/main']
         }
-        letters_ro {
+        lettersPro {
             assets.srcDirs = ['assets/tournament_resources/implementations/lettersgame', 'assets/tournament_resources/main', 'assets/main_resources/main']
         }
     }
@@ -54,20 +54,20 @@ android {
     flavorDimensions "game"
     productFlavors {
 /////////////////////////////////////////////////////////////////////////////
-        letters_en {
-            applicationIdSuffix ".lettersen"
-            versionCode 1
-            versionName "1.00"
+        letters {
+            applicationIdSuffix ".lettersro"
+            versionCode 2
+            versionName "1.01"
             dimension "game"
             manifestPlaceholders = [appIcon: "@drawable/letters_icon"]
         }
 /////////////////////////////////////////////////////////////////////////////
-        letters_ro {
-            applicationIdSuffix ".lettersro"
+        lettersPro {
+            applicationIdSuffix ".lettersropro"
             versionCode 1
             versionName "1.00"
             dimension "game"
-            manifestPlaceholders = [appIcon: "@drawable/letters_icon"]
+            manifestPlaceholders = [appIcon: "@drawable/letterspro_icon"]
         }
 /////////////////////////////////////////////////////////////////////////////
     }
