@@ -49,7 +49,8 @@ class MatrixCreatorService {
 
     private boolean prepareCorrectWordsAndGameLetters(int totalCrossWords, int totalNrOfLetters) {
         int tries = 20;
-        while (allPossibleCorrectWords.size() < totalCrossWords) {
+        //The crossword should have more possibilities for words
+        while (allPossibleCorrectWords.size() < (totalCrossWords)) {
             gameLetters = lettersGameService.getGameLetters(totalNrOfLetters);
             allPossibleCorrectWords = lettersGameService.getCommonLettersWords(gameLetters);
             tries--;

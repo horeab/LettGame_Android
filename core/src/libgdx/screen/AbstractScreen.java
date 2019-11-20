@@ -49,6 +49,14 @@ public abstract class AbstractScreen<TScreenManager extends AbstractScreenManage
         myPopupManager.hideAllDisplayedPopups();
     }
 
+    public boolean isLoading() {
+        return getStage().getRoot().findActor(AbstractScreenManager.LOADING_LABEL_NAME) != null;
+    }
+
+    public AbstractScreen getAbstractScreen() {
+        return this;
+    }
+
     public Group getRoot() {
         return contentStage.getRoot();
     }
@@ -70,6 +78,7 @@ public abstract class AbstractScreen<TScreenManager extends AbstractScreenManage
         if ((Gdx.input.isKeyPressed(Input.Keys.BACK) || Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) && !AbstractScreenManager.backAlreadyKeyPressed) {
             AbstractScreenManager.backAlreadyKeyPressed = true;
             if (myPopupManager.isPopupDisplayed()) {
+                myPopupManager.onBackKeyPress();
                 myPopupManager.hideAllDisplayedPopups();
             } else {
                 onBackKeyPress();
@@ -166,7 +175,8 @@ public abstract class AbstractScreen<TScreenManager extends AbstractScreenManage
 
     public abstract void buildStage();
 
-    public abstract void afterBuildStage();
+    public void afterBuildStage() {
+    }
 
     protected void displayNotifications() {
     }

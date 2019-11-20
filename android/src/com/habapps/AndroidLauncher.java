@@ -17,9 +17,7 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.habapps.service.LettersAppInfoServiceImpl;
-import com.habapps.service.LibGdxGameCalls;
 
 import libgdx.game.Game;
 import libgdx.game.LettersGame;
@@ -51,7 +49,10 @@ public class AndroidLauncher extends AndroidApplication {
         allScreenView.addView(bannerAdview, adParams);
         allScreenView.addView(createGameView());
         setContentView(allScreenView);
-        initAds(bannerAdview);
+
+        if (!appInfoService.isProVersion()) {
+            initAds(bannerAdview);
+        }
     }
 
     private void initServices() {
@@ -91,22 +92,28 @@ public class AndroidLauncher extends AndroidApplication {
     }
 
 
-    public void showPopupAd() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (interstitialAd.isLoaded()) {
-                    interstitialAd.show();
-                    interstitialAd.setAdListener(new AdListener() {
-                        @Override
-                        public void onAdClosed() {
-                            interstitialAd.loadAd(new AdRequest.Builder().build());
-                        }
-                    });
+    public void showPopupAd(final Runnable afterClose) {
+        if (!appInfoService.isProVersion()) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (interstitialAd.isLoaded()) {
+                        interstitialAd.show();
+                        interstitialAd.setAdListener(new AdListener() {
+                            @Override
+                            public void onAdClosed() {
+                                afterClose.run();
+                                interstitialAd.loadAd(new AdRequest.Builder().build());
+                            }
+                        });
+                    } else {
+                        afterClose.run();
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            afterClose.run();
+        }
     }
-
 
 }

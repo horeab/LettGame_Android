@@ -8,11 +8,13 @@ public interface AppInfoService {
 
     String getStoreAppId();
 
+    String getProVersionStoreAppId();
+
     String getLanguage();
 
     boolean googleFacebookLoginEnabled();
 
-    void showPopupAd();
+    void showPopupAd(Runnable afterClose);
 
     void showRewardedVideoAd();
 
@@ -22,11 +24,11 @@ public interface AppInfoService {
 
     String getImplementationGameResourcesFolder();
 
-    boolean screenShotMode();
+    boolean isScreenShotMode();
 
     float gameScreenTopMargin();
 
-    String proVersionStoreAppId();
-
     boolean isProVersion();
+
+    boolean isPortraitMode();
 }

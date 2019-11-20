@@ -7,10 +7,21 @@ import libgdx.game.external.AppInfoService;
 
 public class LettersGameAppInfoServiceImpl implements AppInfoService {
 
+
     private IOSLauncher iosLauncher;
 
     public LettersGameAppInfoServiceImpl(IOSLauncher iosLauncher) {
         this.iosLauncher = iosLauncher;
+    }
+    @Override
+    public boolean isPortraitMode() {
+        return true;
+    }
+
+
+    @Override
+    public String getProVersionStoreAppId() {
+        return null;
     }
 
     @Override
@@ -20,12 +31,7 @@ public class LettersGameAppInfoServiceImpl implements AppInfoService {
 
     @Override
     public boolean isProVersion() {
-        return false;
-    }
-
-    @Override
-    public String proVersionStoreAppId() {
-        return null;
+        return true;
     }
 
     @Override
@@ -39,8 +45,8 @@ public class LettersGameAppInfoServiceImpl implements AppInfoService {
     }
 
     @Override
-    public void showPopupAd() {
-        iosLauncher.showPopupAd();
+    public void showPopupAd(Runnable afterClose) {
+        iosLauncher.showPopupAd(afterClose);
     }
 
     @Override
@@ -54,8 +60,8 @@ public class LettersGameAppInfoServiceImpl implements AppInfoService {
     }
 
     @Override
-    public boolean screenShotMode() {
-        return true;
+    public boolean isScreenShotMode() {
+        return false;
     }
 
     @Override
@@ -80,7 +86,7 @@ public class LettersGameAppInfoServiceImpl implements AppInfoService {
 
     @Override
     public float gameScreenTopMargin() {
-        if (screenShotMode()) {
+        if (isScreenShotMode() || isProVersion()) {
             return 0;
         }
         return iosLauncher.getSafeAreaInsets() + iosLauncher.getBannerAdHeight();

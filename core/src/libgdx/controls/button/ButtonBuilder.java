@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import libgdx.constants.Contrast;
 import libgdx.transactions.TransactionAmount;
 import libgdx.controls.label.MyLabel;
 import libgdx.controls.labelimage.InventoryTableBuilder;
@@ -22,6 +24,7 @@ import libgdx.game.Game;
 import libgdx.resources.FontManager;
 import libgdx.resources.Res;
 import libgdx.resources.dimen.MainDimen;
+import libgdx.utils.model.FontColor;
 
 public class ButtonBuilder {
 
@@ -39,6 +42,7 @@ public class ButtonBuilder {
     private List<ChangeListener> changeListeners = new ArrayList<>();
     private String buttonName;
     private boolean disabled;
+    private Contrast contrast = Contrast.LIGHT;
 
     public ButtonBuilder() {
     }
@@ -52,12 +56,19 @@ public class ButtonBuilder {
     }
 
     protected LabelImage createTextTable(String text, float fontScale) {
-        return createTextTable(text, new GlyphLayout(FontManager.getFont(), text).width, fontScale);
+        return createTextTable(text, new GlyphLayout(Game.getInstance().getFontManager().getFont(), text).width, fontScale);
     }
 
     protected LabelImage createTextTable(String text, float tableWidth, float fontScale) {
         return new LabelImage(new LabelImageConfigBuilder().setWrappedLineLabel(tableWidth).setFontScale(fontScale).setText(text).build());
     }
+
+    public ButtonBuilder setSingleLineText(String text, float fontScale) {
+        LabelImage labelImage = new LabelImage(new LabelImageConfigBuilder().setSingleLineLabel().setFontScale(fontScale).setText(text).build());
+        addCenterTextImageColumn(labelImage);
+        return this;
+    }
+
 
     public ButtonBuilder setWrappedText(LabelImageConfigBuilder labelImageConfigBuilder) {
         LabelImage labelImage = new LabelImage(labelImageConfigBuilder.build());
@@ -67,6 +78,11 @@ public class ButtonBuilder {
 
     public ButtonBuilder setWrappedText(String text, float width) {
         return setWrappedText(new LabelImageConfigBuilder().setText(text).setFontScale(FontManager.getNormalFontDim()).setWrappedLineLabel(width));
+    }
+
+    public ButtonBuilder setContrast(Contrast contrast) {
+        this.contrast = contrast;
+        return this;
     }
 
     public ButtonBuilder setText(String text) {
@@ -91,6 +107,11 @@ public class ButtonBuilder {
 
     public ButtonBuilder setDefaultButton() {
         buttonSkin = MainButtonSkin.DEFAULT;
+        return this;
+    }
+
+    public ButtonBuilder setTransparentButton() {
+        buttonSkin = MainButtonSkin.TRANSPARENT;
         return this;
     }
 
@@ -156,7 +177,7 @@ public class ButtonBuilder {
 
     public MyButton build() {
         processButtonTable();
-        MyButton myButton = new MyButton(getButtonSize(), buttonSkin);
+        MyButton myButton = new MyButton(getButtonSize(), buttonSkin == null ? MainButtonSkin.TRANSPARENT : buttonSkin, contrast);
         if (StringUtils.isNotBlank(buttonName)) {
             myButton.setName(buttonName);
         }
@@ -221,7 +242,7 @@ public class ButtonBuilder {
         }
     }
 
-    private ButtonSize getButtonSize() {
+    protected ButtonSize getButtonSize() {
         if (fixedButtonSize != null) {
             return fixedButtonSize;
         }
@@ -255,7 +276,7 @@ public class ButtonBuilder {
         return isTableEmpty;
     }
 
-    public LabelImage createTableLabelImage(String text, Res icon) {
+    protected LabelImage createTableLabelImage(String text, Res icon) {
         return new LabelImage(new LabelImageConfigBuilder()
                 .setImage(icon)
                 .setWrappedLineLabel(getButtonSize().getWidth() - LabelImageConfigBuilder.DEFAULT_IMAGE_SIDE_DIMENSION * 2f)
@@ -264,5 +285,4 @@ public class ButtonBuilder {
                 .setAlignTextRight(true)
                 .build());
     }
-
 }

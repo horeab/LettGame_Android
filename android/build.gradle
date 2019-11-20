@@ -39,7 +39,7 @@ android {
     defaultConfig {
         applicationId "com.habapps"
         minSdkVersion 19
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -56,8 +56,8 @@ android {
 /////////////////////////////////////////////////////////////////////////////
         letters {
             applicationIdSuffix ".lettersro"
-            versionCode 2
-            versionName "1.01"
+            versionCode 3
+            versionName "1.1"
             dimension "game"
             manifestPlaceholders = [appIcon: "@drawable/letters_icon"]
         }

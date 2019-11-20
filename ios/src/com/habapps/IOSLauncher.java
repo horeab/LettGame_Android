@@ -57,9 +57,10 @@ import libgdx.utils.startgame.test.DefaultFacebookService;
 public class IOSLauncher extends IOSApplication.Delegate {
 
 
+
     private boolean adsInitialized = false;
 
-    private GameProperties gameProperties = GameProperties.lettersgame_ro;
+    private GameProperties gameProperties = GameProperties.lettersgame_pro;
 
     private GADBannerView bannerAdview;
     private GADInterstitial interstitialAd;
@@ -71,9 +72,9 @@ public class IOSLauncher extends IOSApplication.Delegate {
     @Override
     protected IOSApplication createApplication() {
         final IOSApplicationConfiguration config = new IOSApplicationConfiguration();
-        config.orientationLandscape = false;
-        config.orientationPortrait = true;
         appInfoService = new LettersGameAppInfoServiceImpl(this);
+        config.orientationLandscape = !appInfoService.isPortraitMode();
+        config.orientationPortrait = appInfoService.isPortraitMode();
         iosApplication = new IOSApplication(
                 new LettersGame(
                         new DefaultFacebookService(),
@@ -105,7 +106,7 @@ public class IOSLauncher extends IOSApplication.Delegate {
     public boolean didFinishLaunching(UIApplication application, UIApplicationLaunchOptions launchOptions) {
         boolean finishLaunching = super.didFinishLaunching(application, launchOptions);
 
-        if (!appInfoService.screenShotMode()) {
+        if (!appInfoService.isScreenShotMode() && !appInfoService.isProVersion()) {
             initializeAds(iosApplication);
         }
         return finishLaunching;
@@ -169,14 +170,15 @@ public class IOSLauncher extends IOSApplication.Delegate {
         return interstitialAd;
     }
 
-    public void showPopupAd() {
-        if (!appInfoService.screenShotMode()) {
+    public void showPopupAd(Runnable afterClose) {
+        if (!appInfoService.isScreenShotMode() && !appInfoService.isProVersion()) {
             if (interstitialAd.isReady()) {
                 interstitialAd.present(UIApplication.getSharedApplication().getKeyWindow().getRootViewController());
             } else {
                 interstitialAd.loadRequest(createRequest());
             }
         }
+        afterClose.run();
     }
 
     private GADRequest createRequest() {

@@ -118,7 +118,7 @@ public class GameScreen extends AbstractScreen {
         if (keyboardLetterService != null) {
             keyboardLetterService.renderKeyPress();
         }
-        if (getMillisPassedSinceScreenDisplayed() > lastTimeHintDisplayed + HintService.FADE_OUT_DURATION * 2 && crossWordContext!=null&&crossWordContext.getCrossWordMatrix().length>0) {
+        if (getMillisPassedSinceScreenDisplayed() > lastTimeHintDisplayed + HintService.FADE_OUT_DURATION * 2 && crossWordContext != null && crossWordContext.getCrossWordMatrix().length > 0) {
             crossWordContext.getHintService().displayHint(finalWordContext.getFinalWordService().isFinalWordContextActive());
             lastTimeHintDisplayed = getMillisPassedSinceScreenDisplayed();
         }
@@ -147,5 +147,3 @@ public class GameScreen extends AbstractScreen {
     }
 
 }
-
-

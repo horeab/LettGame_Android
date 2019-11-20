@@ -25,6 +25,11 @@ public class LettersAppInfoServiceImpl implements AppInfoService {
     }
 
     @Override
+    public boolean isPortraitMode() {
+        return true;
+    }
+
+    @Override
     public String getAppName() {
         return activity.getResources().getString(R.string.app_name);
     }
@@ -35,8 +40,8 @@ public class LettersAppInfoServiceImpl implements AppInfoService {
     }
 
     @Override
-    public void showPopupAd() {
-        activity.showPopupAd();
+    public void showPopupAd(Runnable afterClose) {
+        activity.showPopupAd(afterClose);
     }
 
     @Override
@@ -50,7 +55,7 @@ public class LettersAppInfoServiceImpl implements AppInfoService {
     }
 
     @Override
-    public boolean screenShotMode() {
+    public boolean isScreenShotMode() {
         return false;
     }
 
@@ -75,12 +80,12 @@ public class LettersAppInfoServiceImpl implements AppInfoService {
     }
 
     @Override
-    public String proVersionStoreAppId() {
+    public String getProVersionStoreAppId() {
         return null;
     }
 
     @Override
     public boolean isProVersion() {
-        return false;
+        return true;
     }
 }

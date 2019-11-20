@@ -1,12 +1,12 @@
 package libgdx.utils;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import javax.swing.text.View;
 
 import libgdx.game.Game;
+
 
 public class ScreenDimensionsManager {
 
@@ -14,6 +14,7 @@ public class ScreenDimensionsManager {
     public static final float STANDARD_SCREEN_RATIO = 1.777083333333333f;
     private static Integer screenWidth;
     private static Integer screenHeight;
+    private static boolean isPortrait = Game.getInstance().getAppInfoService().isPortraitMode();
 
     public static float getScreenHeightValue(float percent) {
         return Utils.getValueForPercent(getScreenHeight(), percent);
@@ -27,8 +28,16 @@ public class ScreenDimensionsManager {
         return (originalHeight / originalWidth) * newWidth;
     }
 
+    public static float getNewHeightForNewWidth(float newWidth, Image image) {
+        return getNewHeightForNewWidth(newWidth, image.getWidth(), image.getHeight());
+    }
+
     public static float getNewWidthForNewHeight(float newHeight, float originalWidth, float originalHeight) {
         return (originalWidth / originalHeight) * newHeight;
+    }
+
+    public static float getNewWidthForNewHeight(float newHeight, Image image) {
+        return getNewWidthForNewHeight(newHeight, image.getWidth(), image.getHeight());
     }
 
     public static int getScreenWidth() {
@@ -36,7 +45,9 @@ public class ScreenDimensionsManager {
             int width = getExternalDeviceWidth();
             //if FALSE, width is larger, so width must be adjusted
             if (!isGdxGraphicsRatioGreaterThanStandard()) {
-                width = Math.round(getExternalDeviceHeight() / STANDARD_SCREEN_RATIO);
+                width = isPortrait ?
+                        Math.round(getExternalDeviceHeight() / STANDARD_SCREEN_RATIO) :
+                        Math.round(getExternalDeviceHeight() * STANDARD_SCREEN_RATIO);
             }
             screenWidth = width;
         }
@@ -48,7 +59,9 @@ public class ScreenDimensionsManager {
             int height = getExternalDeviceHeight();
             //if TRUE, width is smaller, so height must be adjusted
             if (isGdxGraphicsRatioGreaterThanStandard()) {
-                height = Math.round(getExternalDeviceWidth() * STANDARD_SCREEN_RATIO);
+                height = isPortrait ?
+                        Math.round(getExternalDeviceWidth() * STANDARD_SCREEN_RATIO) :
+                        Math.round(getExternalDeviceWidth() / STANDARD_SCREEN_RATIO);
             }
             screenHeight = height;
         }
@@ -61,7 +74,9 @@ public class ScreenDimensionsManager {
     }
 
     private static float getGdxScreenRatio() {
-        return getExternalDeviceHeight() / Float.valueOf(getExternalDeviceWidth());
+        return isPortrait ?
+                getExternalDeviceHeight() / Float.valueOf(getExternalDeviceWidth()) :
+                getExternalDeviceWidth() / Float.valueOf(getExternalDeviceHeight());
     }
 
     public static float getExternalDeviceHeightValue(float percent) {
@@ -79,6 +94,7 @@ public class ScreenDimensionsManager {
     public static void resizeViewPort(Viewport viewport, int width, int height) {
         viewport.update(width, ScreenDimensionsManager.getResizeMarginHeight(height), false);
         viewport.getCamera().position.x = width / 2;
+        viewport.getCamera().position.y = height / 2;
     }
 
     private static int getResizeMarginHeight(int height) {

@@ -1,11 +1,27 @@
 package libgdx.resources;
 
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
+import libgdx.game.Game;
+import libgdx.resources.gamelabel.MainGameLabel;
 import libgdx.utils.ScreenDimensionsManager;
+import libgdx.utils.model.FontColor;
+import libgdx.utils.model.FontConfig;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class FontManager {
+
+    private String allChars;
+    private Map<FontConfig, BitmapFont> usedFonts = new HashMap<>();
+    private FreeTypeFontGenerator generator;
 
     private static final float STANDARD_FONT_SIZE = 9;
 
@@ -13,6 +29,15 @@ public class FontManager {
     private static final float NORMAL_BIG_FONT = STANDARD_FONT_SIZE * 1.3f;
     private static final float NORMAL_FONT = STANDARD_FONT_SIZE;
     private static final float SMALL_FONT = STANDARD_FONT_SIZE * 0.9f;
+
+    public FontManager() {
+        allChars = FreeTypeFontGenerator.DEFAULT_CHARS + getGameAllFontChars();
+        generator = new FreeTypeFontGenerator(Gdx.files.internal(MainResource.valueOf(MainGameLabel.font_name.getText()).getPath()));
+    }
+
+    protected String getGameAllFontChars() {
+        return Game.getInstance().getSubGameDependencyManager().getAllFontChars();
+    }
 
     public static float getNormalBigFontDim() {
         return calculateFontSize(NORMAL_BIG_FONT);
@@ -38,13 +63,62 @@ public class FontManager {
         return calculateFontSize(STANDARD_FONT_SIZE * multiplier);
     }
 
-    public static BitmapFont getFont() {
-        return ResourcesManager.getSkin().getFont(ResourcesManager.getFontName());
+    public BitmapFont getFont() {
+        return getFont(FontColor.BLACK);
     }
 
-    public static BitmapFont getBigFont() {
-        return ResourcesManager.getSkin().getFont(ResourcesManager.getBigFontName());
+    public BitmapFont getFont(FontColor color) {
+        BitmapFont result = getFontFromMap(color);
+        if (result == null) {
+            initFont(color);
+            result = getFontFromMap(color);
+        }
+        return result;
     }
 
+    private BitmapFont getFontFromMap(FontColor color) {
+        BitmapFont result = null;
+        for (Map.Entry<FontConfig, BitmapFont> entry : usedFonts.entrySet()) {
+            if (entry.getKey().getColor() == color.getColor() && entry.getKey().getBorderColor() == color.getColor()) {
+                result = entry.getValue();
+                break;
+            }
+        }
+        return result;
+    }
+
+    public BitmapFont getFont(FontConfig fontConfig) {
+        BitmapFont bitmapFont = usedFonts.get(fontConfig);
+        if (bitmapFont == null) {
+            createBitmapFont(fontConfig);
+            return usedFonts.get(fontConfig);
+        } else {
+            return bitmapFont;
+        }
+
+    }
+
+    private void initFont(FontColor fontColor) {
+        Color color = fontColor.getColor();
+        createBitmapFont(new FontConfig(color, color, FontConfig.FONT_SIZE, FontConfig.STANDARD_BORDER_WIDTH));
+    }
+
+    private FreeTypeFontGenerator.FreeTypeFontParameter createFreeTypeFontParameter(Color color, Color borderColor, int fontSize, float borderWidth) {
+        FreeTypeFontGenerator.FreeTypeFontParameter fontCreationParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        fontCreationParameter.borderWidth = borderWidth;
+        fontCreationParameter.characters = allChars;
+        fontCreationParameter.borderColor = borderColor;
+        fontCreationParameter.color = color;
+        fontCreationParameter.size = fontSize;
+        return fontCreationParameter;
+    }
+
+    private void createBitmapFont(FontConfig fontConfig) {
+        BitmapFont font = generator.generateFont(createFreeTypeFontParameter(fontConfig.getColor(), fontConfig.getBorderColor(), fontConfig.getFontSize(), fontConfig.getBorderWidth()));
+        FreeTypeFontGenerator.setMaxTextureSize(2048);
+        font.getData().setScale(fontConfig.getFontSize());
+        font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        usedFonts.put(fontConfig, font);
+    }
 
 }

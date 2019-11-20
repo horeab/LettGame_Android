@@ -13,10 +13,10 @@ import libgdx.resources.FontManager;
 import libgdx.resources.LettersGameLabel;
 import libgdx.resources.Res;
 import libgdx.resources.Resource;
-import libgdx.resources.ResourcesManager;
 import libgdx.resources.dimen.MainDimen;
 import libgdx.utils.ActorPositionManager;
 import libgdx.utils.ScreenDimensionsManager;
+import libgdx.utils.model.FontColor;
 
 public class ImageAnimation {
 
@@ -27,7 +27,7 @@ public class ImageAnimation {
     }
 
     public Table animateWinGame(Runnable runnable, Table topTable) {
-        return createTable(Resource.submit_btn_up, LettersGameLabel.LEVEL_FINISHED.getText(), topTable, runnable);
+        return createTable(Resource.submit_btn_up, LettersGameLabel.level_finished.getText(), topTable, runnable);
     }
 
     private Table createTable(Res resource, String text, Table topTable, Runnable runnable) {
@@ -39,7 +39,7 @@ public class ImageAnimation {
         table.setBackground(GraphicUtils.getNinePatch(Resource.gray_background));
         MyWrappedLabel myLabel = new MyWrappedLabel(text);
         myLabel.setFontScale(FontManager.getBigFontDim());
-        myLabel.setStyle(ResourcesManager.getLabelRed());
+        myLabel.setTextColor(FontColor.RED);
         table.add(myLabel);
         table.setTransform(true);
         ActorPositionManager.setActorCenterScreen(table);

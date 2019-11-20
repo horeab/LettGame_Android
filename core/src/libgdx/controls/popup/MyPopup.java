@@ -10,12 +10,9 @@ import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-
-import org.apache.commons.lang3.StringUtils;
-
 import libgdx.controls.ScreenRunnable;
-import libgdx.controls.button.ButtonCreator;
 import libgdx.controls.button.MyButton;
+import libgdx.controls.button.builders.BackButtonBuilder;
 import libgdx.controls.label.MyWrappedLabel;
 import libgdx.controls.label.MyWrappedLabelConfigBuilder;
 import libgdx.game.Game;
@@ -26,9 +23,15 @@ import libgdx.resources.dimen.MainDimen;
 import libgdx.screen.AbstractScreen;
 import libgdx.screen.AbstractScreenManager;
 import libgdx.utils.ScreenDimensionsManager;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 public abstract class MyPopup<TScreen extends AbstractScreen, TScreenManager extends AbstractScreenManager> extends Dialog implements Popup {
 
+    private List<Actor> actorsToFront = new ArrayList<>();
     private TScreen screen;
     protected TScreenManager screenManager = (TScreenManager) Game.getInstance().getScreenManager();
 
@@ -45,7 +48,7 @@ public abstract class MyPopup<TScreen extends AbstractScreen, TScreenManager ext
     @Override
     public MyPopup addToPopupManager() {
         if (Gdx.app.getType() == Application.ApplicationType.iOS) {
-            MyButton backBtn = new ButtonCreator().createScreenBackButton(new ChangeListener() {
+            MyButton backBtn = new BackButtonBuilder().createScreenBackButton(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
                     hide();
@@ -62,6 +65,9 @@ public abstract class MyPopup<TScreen extends AbstractScreen, TScreenManager ext
         return this;
     }
 
+    @Override
+    public void onBackKeyPress() {
+    }
 
     @Override
     public TScreen getScreen() {
@@ -73,12 +79,20 @@ public abstract class MyPopup<TScreen extends AbstractScreen, TScreenManager ext
     }
 
     protected void addText() {
-        MyWrappedLabel wrappedText = new MyWrappedLabel(new MyWrappedLabelConfigBuilder().setText(getLabelText()).setWidth(getPrefWidth() - getPrefWidth() / 10).build());
+        MyWrappedLabel wrappedText = getLabel();
         addEmptyRowWithMargin(getContentTable());
         if (StringUtils.isNotBlank(getLabelText())) {
             getContentTable().add(wrappedText).width(wrappedText.getPrefWidth()).row();
             addEmptyRowWithMargin(getContentTable());
         }
+    }
+
+    protected MyWrappedLabel getLabel() {
+        return new MyWrappedLabel(getInfoLabelConfigBuilder().build());
+    }
+
+    protected MyWrappedLabelConfigBuilder getInfoLabelConfigBuilder() {
+        return new MyWrappedLabelConfigBuilder().setText(getLabelText()).setWidth(getPrefWidth() - getPrefWidth() / 10);
     }
 
     protected static void addEmptyRowWithMargin(Table table) {
@@ -87,6 +101,15 @@ public abstract class MyPopup<TScreen extends AbstractScreen, TScreenManager ext
 
     protected void addButton(MyButton btn) {
         getButtonTable().add(btn).padBottom(MainDimen.vertical_general_margin.getDimen()).width(btn.getWidth()).height(btn.getHeight() * 1.05f).row();
+    }
+
+    protected void addActorsToFront(Actor actor) {
+        getContentTable().getStage().getRoot().addActor(actor);
+        actorsToFront.add(actor);
+    }
+
+    protected List<Actor> getActorsToFront() {
+        return actorsToFront;
     }
 
     protected abstract String getLabelText();

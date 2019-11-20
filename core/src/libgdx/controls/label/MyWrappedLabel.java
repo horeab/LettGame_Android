@@ -3,17 +3,20 @@ package libgdx.controls.label;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import libgdx.constants.ScreenContrast;
 import libgdx.controls.TextTable;
 import libgdx.game.Game;
 import libgdx.resources.FontManager;
+import libgdx.utils.model.FontColor;
 
 public class MyWrappedLabel extends TextTable {
 
@@ -31,6 +34,9 @@ public class MyWrappedLabel extends TextTable {
     public MyWrappedLabel(MyWrappedLabelConfig myWrappedLabelConfig) {
         this.myWrappedLabelConfig = myWrappedLabelConfig;
         create(myWrappedLabelConfig.getText());
+        if (myWrappedLabelConfig.isSingleLineLabel()) {
+            fitToContainer();
+        }
     }
 
     public void setEllipsis(float labelWidth) {
@@ -55,8 +61,11 @@ public class MyWrappedLabel extends TextTable {
         }
     }
 
-    public void setStyle(String style) {
+    public void setTextColor(FontColor color) {
         for (MyLabel myLabel : getLabels()) {
+            Label.LabelStyle style = new Label.LabelStyle();
+            style.font = Game.getInstance().getFontManager().getFont(color);
+            style.fontColor = color.getColor();
             myLabel.setStyle(style);
         }
     }
@@ -80,7 +89,7 @@ public class MyWrappedLabel extends TextTable {
             addSingleLineLabel(text);
         } else {
             List<String> wrappedLines = new ArrayList<>();
-            BitmapFont font = FontManager.getFont();
+            BitmapFont font = getConfigFont();
             font.getData().setScale(myWrappedLabelConfig.getFontScale());
             try {
                 GlyphLayout glyphLayout = new GlyphLayout(font, text, Color.RED, myWrappedLabelConfig.getWidth(), Align.center, true);
@@ -99,6 +108,16 @@ public class MyWrappedLabel extends TextTable {
         }
     }
 
+    private BitmapFont getConfigFont() {
+        BitmapFont font;
+        if(myWrappedLabelConfig.getFontConfig()!=null){
+            font = Game.getInstance().getFontManager().getFont(myWrappedLabelConfig.getFontConfig());
+        }else {
+            font = Game.getInstance().getFontManager().getFont(myWrappedLabelConfig.getTextColor());
+        }
+        return font;
+    }
+
     private void addSingleLineLabel(String text) {
         add(configLabel(text));
     }
@@ -106,8 +125,11 @@ public class MyWrappedLabel extends TextTable {
     private MyLabel configLabel(String text) {
         MyLabel label = new MyLabel(text);
         label.setFontScale(myWrappedLabelConfig.getFontScale());
-        label.setStyle(myWrappedLabelConfig.getTextStyle());
         label.setAlignment(Align.center);
+
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = getConfigFont();
+        label.setStyle(labelStyle);
         rowLabels.add(label);
         return label;
     }
@@ -122,10 +144,19 @@ public class MyWrappedLabel extends TextTable {
     }
 
     public void setStyleDependingOnContrast() {
-        setStyle(MyWrappedLabelConfigBuilder.getScreenContrastStyle());
+        setTextColor(MyWrappedLabelConfigBuilder.getScreenContrastStyle());
     }
 
-    public void setStyleDependingOnContrast(String darkContrastStyle, String lightContrastStyle) {
-        setStyle(MyWrappedLabelConfigBuilder.getScreenContrastStyle(darkContrastStyle, lightContrastStyle));
+    public void setStyleDependingOnContrast(FontColor darkContrastStyle, FontColor lightContrastStyle) {
+        setTextColor(MyWrappedLabelConfigBuilder.getScreenContrastStyle(darkContrastStyle, lightContrastStyle));
+    }
+
+    public MyWrappedLabel fitToContainer() {
+        MyWrappedLabel label = this;
+        while (label.getLabels().size() > 1) {
+            myWrappedLabelConfig.setFontScale(myWrappedLabelConfig.getFontScale() / 1.01f);
+            label = new MyWrappedLabel(myWrappedLabelConfig);
+        }
+        return label;
     }
 }

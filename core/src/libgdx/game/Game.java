@@ -2,12 +2,16 @@ package libgdx.game;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.I18NBundle;
 
+import libgdx.constants.user.AccountCreationSource;
+import libgdx.dbapi.UsersDbApiService;
 import libgdx.game.external.AppInfoService;
 import libgdx.game.external.BillingService;
 import libgdx.game.external.FacebookService;
 import libgdx.game.external.LoginService;
+import libgdx.game.model.BaseUserInfo;
 import libgdx.resources.FontManager;
 import libgdx.resources.Res;
 import libgdx.screen.AbstractScreen;
@@ -39,6 +43,8 @@ public abstract class Game<
     private TSubGameDependencyManager subGameDependencyManager;
     private TMainDependencyManager mainDependencyManager;
     protected TScreenManager screenManager;
+    private FontManager fontManager;
+    private UsersDbApiService usersDbApiService;
 
     public Game(FacebookService facebookService,
                 BillingService billingService,
@@ -50,6 +56,7 @@ public abstract class Game<
         this.facebookService = facebookService;
         this.billingService = billingService;
         this.mainDependencyManager = mainDependencyManager;
+        this.usersDbApiService = new UsersDbApiService();
         subGameDependencyManager = (TSubGameDependencyManager) ((TGameId) EnumUtils.getEnumValue(mainDependencyManager.getGameIdClass(), appInfoService.getGameIdPrefix())).getDependencyManager();
         screenManager = (TScreenManager) mainDependencyManager.createScreenManager();
     }
@@ -61,6 +68,18 @@ public abstract class Game<
         return hasInternet;
     }
 
+    public void setNewContext(TAppInfoService newAppInfoService) {
+        this.appInfoService = newAppInfoService;
+        fontManager = new FontManager();
+        screenManager.showMainScreen();
+    }
+
+    public BaseUserInfo getCurrentUser() {
+        String externalId = getLoginService().getExternalId();
+        AccountCreationSource accountCreationSource = getLoginService().getAccountCreationSource();
+        return new BaseUserInfo(usersDbApiService.getUserId(externalId, accountCreationSource), externalId, accountCreationSource, getLoginService().getFullName());
+    }
+
     @Override
     public void create() {
         initAssetManager();
@@ -68,9 +87,19 @@ public abstract class Game<
     }
 
     public void executeAfterAssetsLoaded() {
+        fontManager = new FontManager();
         displayScreenAfterAssetsLoad();
-        FontManager.getFont().getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        FontManager.getBigFont().getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        initLogin();
+    }
+    private void initLogin() {
+        if (!getLoginService().isUserLoggedIn() && !getAppInfoService().googleFacebookLoginEnabled()) {
+            getLoginService().loginClick(AccountCreationSource.INTERNAL, new Runnable() {
+                @Override
+                public void run() {
+                    getScreenManager().showMainScreen();
+                }
+            });
+        }
     }
 
     public TMainDependencyManager getMainDependencyManager() {
@@ -91,6 +120,10 @@ public abstract class Game<
                 assetManager.load(path, classType);
             }
         }
+    }
+
+    public FontManager getFontManager() {
+        return fontManager;
     }
 
     public TAppInfoService getAppInfoService() {

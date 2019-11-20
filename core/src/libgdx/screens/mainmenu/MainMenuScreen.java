@@ -101,4 +101,3 @@ public class MainMenuScreen extends AbstractScreen {
     }
 
 }
-

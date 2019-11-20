@@ -16,16 +16,17 @@ public class DefaultAppInfoService implements AppInfoService {
     }
 
     @Override
-    public void showPopupAd() {
+    public void showPopupAd(Runnable afterClose) {
+        afterClose.run();
+    }
+
+    @Override
+    public String getProVersionStoreAppId() {
+        return null;
     }
 
     @Override
     public void showRewardedVideoAd() {
-    }
-
-    @Override
-    public String proVersionStoreAppId() {
-        return getStoreAppId();
     }
 
     @Override
@@ -39,7 +40,7 @@ public class DefaultAppInfoService implements AppInfoService {
     }
 
     @Override
-    public boolean screenShotMode() {
+    public boolean isScreenShotMode() {
         return false;
     }
 
@@ -66,6 +67,11 @@ public class DefaultAppInfoService implements AppInfoService {
     @Override
     public String getLanguage() {
         return "en";
+    }
+
+    @Override
+    public boolean isPortraitMode() {
+        return true;
     }
 
     @Override

@@ -3,15 +3,14 @@ package libgdx.screens.game.service.submitanddelete;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 
-import libgdx.game.LettersGame;
 import libgdx.model.CrossWordWithPosition;
 
+import libgdx.utils.model.FontColor;
 import org.apache.commons.lang3.StringUtils;
 
 import libgdx.game.Game;
 import libgdx.model.LetterButton;
 import libgdx.resources.LettersGameLabel;
-import libgdx.resources.ResourcesManager;
 import libgdx.screen.AbstractScreen;
 import libgdx.screens.game.GameScreen;
 import libgdx.screens.game.service.Utils;
@@ -48,7 +47,7 @@ public abstract class CrosswordSubmitAndDeleteService extends SubmitAndDeleteSer
         String pressedWord = getPressedWord();
         if (isSubmitBtnVisible()) {
             if (isWordAlreadyFound(pressedWord)) {
-                wordAnimationService.createWordInfoLabelAnimation(LettersGameLabel.ALREADY_ADDED.getText(), ResourcesManager.getLabelGreen());
+                wordAnimationService.createWordInfoLabelAnimation(LettersGameLabel.already_added.getText(), FontColor.GREEN);
             } else {
                 CrossWordWithPosition wordCorrect = isWordCorrect(pressedWord);
                 processGameFinished();

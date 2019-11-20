@@ -86,24 +86,32 @@ public class LettersGameService {
         return result;
     }
 
-    public Set<String> getAllWords(boolean withDifficulty) {
-        if (withDifficulty) {
+    public Set<String> getAllWords(boolean withFilter) {
+        if (withFilter) {
             if (allWords.isEmpty()) {
-                allWords = allWordLines(withDifficulty);
+                allWords = allWordLines(withFilter, startingTotalLetters, startingTotalWords);
             }
             return allWords;
         } else {
-            return allWordLines(withDifficulty);
+            return allWordLines(withFilter, startingTotalLetters, startingTotalWords);
         }
     }
 
-    private Set<String> allWordLines(boolean withDifficulty) {
+    public static Set<String> allWordLines(boolean withDifficulty, int startingTotalLetters, int startingTotalWords) {
         Set<String> set = new HashSet<>();
         Scanner scanner = new Scanner(Gdx.files.internal(Game.getInstance().getAppInfoService().getImplementationGameResourcesFolder() + "words/" + Game.getInstance().getAppInfoService().getLanguage() + "/allWords.txt").readString());
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
+            //last part of the line is the correct word in this case
+//            if (line.contains(" ")) {
+//                line = line.split(" ")[1];
+//            }
+            //first part of the line is the correct word in this case
+            if (line.contains(" ")) {
+                line = line.split(" ")[0];
+            }
             if (line.length() >= getMinWordLength()
-                    && line.length() <= getMaxWordLength(withDifficulty)
+                    && line.length() <= getMaxWordLength(withDifficulty, startingTotalLetters, startingTotalWords)
                     && isAlpha(line)) {
                 set.add(line.toLowerCase());
             }
@@ -112,10 +120,10 @@ public class LettersGameService {
         return set;
     }
 
-    private int getMaxWordLength(boolean withDifficulty) {
+    private static int getMaxWordLength(boolean withDifficulty, int startingTotalLetters, int startingTotalWords) {
         int wordLength;
         if (startingTotalLetters == 4) {
-            wordLength = 3;
+            wordLength = 4;
         } else if (startingTotalLetters == 6) {
             wordLength = 4;
         } else if (startingTotalLetters == 8) {
@@ -130,17 +138,17 @@ public class LettersGameService {
         wordLength = wordLength + (startingTotalWords - 4);
 
         int MAX_WORD_LENGTH = 8;
-        int MIN_WORD_LENGTH = 3;
+        int MIN_WORD_LENGTH = 4;
         wordLength = wordLength > MAX_WORD_LENGTH ? MAX_WORD_LENGTH : wordLength;
         wordLength = wordLength < MIN_WORD_LENGTH ? MIN_WORD_LENGTH : wordLength;
         return withDifficulty ? wordLength : MAX_WORD_LENGTH;
     }
 
-    private int getMinWordLength() {
-        return 3;
+    private static int getMinWordLength() {
+        return 4;
     }
 
-    private boolean isAlpha(String name) {
+    private static boolean isAlpha(String name) {
         char[] chars = name.toCharArray();
 
         for (char c : chars) {
